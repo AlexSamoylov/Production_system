@@ -7,8 +7,8 @@ import java.util.List;
 public class ClarifyingRule extends Rule {
     final List<PsLabel> out;
 
-    public ClarifyingRule(List<PsLabel> inputLabels, List<PsLabel> outputLabels) {
-        super(inputLabels);
+    public ClarifyingRule(String source, List<PsLabel> inputLabels, List<PsLabel> outputLabels) {
+        super(source, inputLabels);
         this.out = outputLabels;
     }
 
@@ -16,7 +16,7 @@ public class ClarifyingRule extends Rule {
         return out;
     }
 
-    public static ClarifyingRule create(List<PsLabel> inputLabels, List<PsLabel> outputLabels) {
-        return new ClarifyingRule(inputLabels, outputLabels);
+    public static ClarifyingRule create(String source, List<PsLabel> inputLabels, List<PsLabel> outputLabels) {
+        return new ClarifyingRule(source, inputLabels, outputLabels);
     }
 }

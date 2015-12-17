@@ -5,9 +5,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.dnu.samoylov.storage.FullLabelStorage;
-import org.dnu.samoylov.util.txtreader.LabelFileReader;
-import org.dnu.samoylov.util.txtreader.RuleReader;
 
 public class MainApplication extends Application {
 
@@ -17,13 +14,6 @@ public class MainApplication extends Application {
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
-
-        LabelFileReader labelFileReader = new LabelFileReader();
-        RuleReader ruleReader = new RuleReader();
-
-        labelFileReader.readFile(getClass().getResource("../label.txt").getPath());
-        FullLabelStorage.getInstance().initFromLabelAndEnum();
-        ruleReader.readFile(getClass().getResource("../rule.txt").getPath());
     }
 
 

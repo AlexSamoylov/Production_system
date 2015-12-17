@@ -4,8 +4,7 @@ import org.dnu.samoylov.model.PsLabel;
 import org.dnu.samoylov.model.rule.ClarifyingRule;
 import org.dnu.samoylov.model.rule.ResultingRule;
 import org.dnu.samoylov.storage.FullLabelStorage;
-import org.dnu.samoylov.storage.PsLabelStorage;
-import org.dnu.samoylov.storage.RuleStorage;
+import org.dnu.samoylov.storage.input.RuleStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,10 +30,10 @@ public class RuleReader extends TxtReader {
         final int resultingMarkerIndex = outputDataStr.indexOf(RESULTING_RULE_MARKER);
         if(resultingMarkerIndex < 0) {
             final List<PsLabel> outputLabels = readLabel(outputDataStr);
-            RuleStorage.getInstance().add(ClarifyingRule.create(inputLabels, outputLabels));
+            RuleStorage.getInstance().add(ClarifyingRule.create(line, inputLabels, outputLabels));
         } else {
             final String resultRule = outputDataStr.substring(resultingMarkerIndex + RESULTING_RULE_MARKER.length());
-            RuleStorage.getInstance().add(ResultingRule.create(inputLabels, resultRule));
+            RuleStorage.getInstance().add(ResultingRule.create(line, inputLabels, resultRule));
         }
     }
 

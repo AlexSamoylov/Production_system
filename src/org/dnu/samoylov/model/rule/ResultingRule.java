@@ -7,12 +7,12 @@ import java.util.List;
 public class ResultingRule extends Rule {
     final String message;
 
-    public ResultingRule(List<PsLabel> inputLabels, String message) {
-        super(inputLabels);
+    public ResultingRule(String source, List<PsLabel> inputLabels, String message) {
+        super(source, inputLabels);
         this.message = message;
     }
 
-    public static ResultingRule create(List<PsLabel> inputLabels, String message) {
-        return new ResultingRule(inputLabels, message);
+    public static ResultingRule create(String source, List<PsLabel> inputLabels, String message) {
+        return new ResultingRule(source, inputLabels, message);
     }
 }

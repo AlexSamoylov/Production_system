@@ -1,10 +1,13 @@
 package org.dnu.samoylov.storage;
 
+import org.dnu.samoylov.model.PsEnumLabel;
 import org.dnu.samoylov.model.PsLabel;
+import org.dnu.samoylov.storage.input.PsEnumStorage;
+import org.dnu.samoylov.storage.input.PsLabelStorage;
 import org.dnu.samoylov.util.PsLabelHelper;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class FullLabelStorage extends Storage<PsLabel> {
@@ -16,12 +19,10 @@ public class FullLabelStorage extends Storage<PsLabel> {
     }
 
     public void initFromLabelAndEnum() {
-        final List<List<PsLabel>> labelsFromEnum = PsEnumStorage.getInstance().getList().stream()
-                .map(enumLabel -> PsLabelHelper.getInstance().createLabelsFromEnum(enumLabel)).collect(Collectors.toList());
+        final List<PsLabel> labelsFromEnum = PsEnumStorage.getInstance().getList().stream()
+                .map(PsEnumLabel::getEquivalentLabels).flatMap(Collection::stream).collect(Collectors.toList());
 
         this.getList().addAll(PsLabelStorage.getInstance().getList());
-        for (List<PsLabel> psLabels : labelsFromEnum) {
-            this.getList().addAll(psLabels);
-        }
+        this.getList().addAll(labelsFromEnum);
     }
 }

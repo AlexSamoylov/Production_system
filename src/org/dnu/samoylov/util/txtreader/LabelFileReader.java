@@ -2,8 +2,8 @@ package org.dnu.samoylov.util.txtreader;
 
 import org.dnu.samoylov.model.PsEnumLabel;
 import org.dnu.samoylov.model.PsLabel;
-import org.dnu.samoylov.storage.PsEnumStorage;
-import org.dnu.samoylov.storage.PsLabelStorage;
+import org.dnu.samoylov.storage.input.PsEnumStorage;
+import org.dnu.samoylov.storage.input.PsLabelStorage;
 
 import java.util.MissingFormatArgumentException;
 

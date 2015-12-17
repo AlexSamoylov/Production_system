@@ -1,5 +1,7 @@
 package org.dnu.samoylov.model;
 
+import org.dnu.samoylov.util.PsLabelHelper;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,5 +25,13 @@ public class PsEnumLabel {
 
     public static PsEnumLabel create(String prefix, String... names) {
         return new PsEnumLabel(prefix, names);
+    }
+
+    List<PsLabel> equivalentLabels;
+    public List<PsLabel> getEquivalentLabels() {
+        if(equivalentLabels==null) {
+            equivalentLabels = PsLabelHelper.getInstance().createLabelsFromEnum(this);
+        }
+        return equivalentLabels;
     }
 }
