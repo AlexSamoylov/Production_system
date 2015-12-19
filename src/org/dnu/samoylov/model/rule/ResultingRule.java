@@ -5,14 +5,18 @@ import org.dnu.samoylov.model.PsLabel;
 import java.util.List;
 
 public class ResultingRule extends Rule {
-    final String message;
+    final PsResult result;
 
     public ResultingRule(String source, List<PsLabel> inputLabels, String message) {
         super(source, inputLabels);
-        this.message = message;
+        this.result = PsResult.create(message);
     }
 
     public static ResultingRule create(String source, List<PsLabel> inputLabels, String message) {
         return new ResultingRule(source, inputLabels, message);
+    }
+
+    public PsResult getResult() {
+        return result;
     }
 }
