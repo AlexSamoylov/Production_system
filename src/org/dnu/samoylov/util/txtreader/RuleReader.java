@@ -7,6 +7,7 @@ import org.dnu.samoylov.storage.FullLabelStorage;
 import org.dnu.samoylov.storage.input.RuleStorage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.MissingFormatArgumentException;
 
@@ -21,8 +22,10 @@ public class RuleReader extends TxtReader {
 
         final int indexInOutSeparator = line.indexOf(IN_OUT_SEPARATOR);
         assert indexInOutSeparator>START_PREDICATE.length() : "use " + IN_OUT_SEPARATOR;
-        String inputDataStr = line.substring(START_PREDICATE.length() + 1, indexInOutSeparator - 1);
-        String outputDataStr = line.substring(indexInOutSeparator + IN_OUT_SEPARATOR.length() + 1);
+        String inputDataStr = (START_PREDICATE.length() + 1  < indexInOutSeparator - 1)?
+                line.substring(START_PREDICATE.length() + 1, indexInOutSeparator - 1) : "";
+        String outputDataStr = (indexInOutSeparator + IN_OUT_SEPARATOR.length() + 1< line.length()) ?
+                line.substring(indexInOutSeparator + IN_OUT_SEPARATOR.length() + 1) : "";
 
 
         final List<PsLabel> inputLabels = readLabel(inputDataStr);
@@ -48,7 +51,8 @@ public class RuleReader extends TxtReader {
                         filter(psLabel -> psLabel.getName().equals(neededFindLabel)).findFirst().get();
                 psLabels.add(foundLabel);
             } catch (java.util.NoSuchElementException e) {
-                throw new MissingFormatArgumentException("labels " + neededFindLabel + "not found");
+                //throw new MissingFormatArgumentException("labels " + neededFindLabel + "not found");
+                return Collections.emptyList();
             }
         }
 

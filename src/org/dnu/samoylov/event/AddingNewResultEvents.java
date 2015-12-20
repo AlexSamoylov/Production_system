@@ -5,13 +5,13 @@ import org.dnu.samoylov.model.rule.PsResult;
 import java.util.List;
 
 public class AddingNewResultEvents {
-    public final List<PsResult> results;
+    public final PsResult result;
 
-    public AddingNewResultEvents(List<PsResult> results) {
-        this.results = results;
+    public AddingNewResultEvents(PsResult result) {
+        this.result = result;
     }
 
-    public static AddingNewResultEvents create(List<PsResult> results) {
-        return new AddingNewResultEvents(results);
+    public static AddingNewResultEvents create(PsResult result) {
+        return new AddingNewResultEvents(result);
     }
 }

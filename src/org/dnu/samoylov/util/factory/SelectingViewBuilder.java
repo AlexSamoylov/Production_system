@@ -70,12 +70,12 @@ public class SelectingViewBuilder {
     }
 
 
-    private void popPsLabelWithSelectedBro(PsLabel psLabel) {
+    public void popPsLabelWithSelectedBro(PsLabel psLabel) {
         selectedLabelsList.getItems().remove(psLabel.getName());
         SelectedLabelStorage.getInstance().getList().remove(psLabel);
     }
 
-    private void putPsLabelToSelectedBro(PsLabel psLabel) {
+    public void putPsLabelToSelectedBro(PsLabel psLabel) {
         selectedLabelsList.getItems().add(psLabel.getName());
         SelectedLabelStorage.getInstance().getList().add(psLabel);
     }

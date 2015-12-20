@@ -33,6 +33,6 @@ public class JavaFxBus {
     }
 
     public void post(AddingNewResultEvents addingNewResultEvents) {
-        mainController.addNewResult(addingNewResultEvents.results);
+        mainController.addNewResult(addingNewResultEvents.result);
     }
 }

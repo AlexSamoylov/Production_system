@@ -30,7 +30,7 @@ public class MainPresenter {
         ruleReader.readFile(getClass().getResource("../rule.txt").getPath());
     }
 
-    public void fillAllLabelsList(ScrollPane allLabelList, ListView selectedLabelsList) throws IOException {
+    public void fillAllLabelsList(ScrollPane allLabelList, ListView<Text> selectedLabelsList) throws IOException {
         final VBox vb = new VBox();
 
         SelectingViewBuilder selectingViewBuilder = new SelectingViewBuilder(vb, selectedLabelsList);
@@ -46,7 +46,7 @@ public class MainPresenter {
         allLabelList.setContent(vb);
     }
 
-    public void fillRuleList(ListView rulesList) {
+    public void fillRuleList(ListView<Text> rulesList) {
         for (Rule rule : RuleStorage.getInstance().getList()) {
             Text text = new Text();
             text.setText(rule.toString());
