@@ -1,9 +1,8 @@
 package org.dnu.samoylov.service;
 
-import org.dnu.samoylov.event.AddingNewLabelsEvent;
-import org.dnu.samoylov.event.AddingNewResultEvents;
-import org.dnu.samoylov.event.FindSuitableRuleEvent;
-import org.dnu.samoylov.event.SelectFinalResultEvent;
+import javafx.application.Platform;
+import javafx.scene.paint.Color;
+import org.dnu.samoylov.event.*;
 import org.dnu.samoylov.mvc.MainController;
 
 public class JavaFxBus {
@@ -14,7 +13,30 @@ public class JavaFxBus {
         this.mainController = mainController;
     }
 
+    public void post(FindSuitableRuleEvent suitableRuleEvent) {
+        Platform.runLater(() ->
+                mainController.markSuitableRule(suitableRuleEvent.rule));
+    }
 
+    public void post(AddingNewLabelsEvent newLabelsEvent) {
+        Platform.runLater(() ->
+                     mainController.addNewLabel(newLabelsEvent.newLabels));
+    }
+
+    public void post(AddingNewResultEvents addingNewResultEvents) {
+        Platform.runLater(() ->
+                     mainController.addNewResult(addingNewResultEvents.result));
+    }
+
+    public void post(SelectFinalResultEvent selectFinalResultEvent) {
+        Platform.runLater(() ->
+                     mainController.selectFinalResult(selectFinalResultEvent.result));
+    }
+
+    public void post(LogEvent logEvent) {
+        Platform.runLater(() ->
+                     mainController.addToLog(logEvent.message, Color.GRAY));
+    }
 
 
 
@@ -23,21 +45,5 @@ public class JavaFxBus {
         return INSTANCE;
     }
     private JavaFxBus() {
-    }
-
-    public void post(FindSuitableRuleEvent suitableRuleEvent) {
-        mainController.markSuitableRule(suitableRuleEvent.rule);
-    }
-
-    public void post(AddingNewLabelsEvent newLabelsEvent) {
-        mainController.addNewLabel(newLabelsEvent.newLabels);
-    }
-
-    public void post(AddingNewResultEvents addingNewResultEvents) {
-        mainController.addNewResult(addingNewResultEvents.result);
-    }
-
-    public void post(SelectFinalResultEvent selectFinalResultEvent) {
-        mainController.selectFinalResult(selectFinalResultEvent.result);
     }
 }

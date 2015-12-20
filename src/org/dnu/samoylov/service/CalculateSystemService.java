@@ -1,9 +1,6 @@
 package org.dnu.samoylov.service;
 
-import org.dnu.samoylov.event.AddingNewLabelsEvent;
-import org.dnu.samoylov.event.AddingNewResultEvents;
-import org.dnu.samoylov.event.FindSuitableRuleEvent;
-import org.dnu.samoylov.event.SelectFinalResultEvent;
+import org.dnu.samoylov.event.*;
 import org.dnu.samoylov.model.PsLabel;
 import org.dnu.samoylov.model.rule.ClarifyingRule;
 import org.dnu.samoylov.model.rule.PsResult;
@@ -21,7 +18,38 @@ public class CalculateSystemService {
     final List<PsResult> results = new LinkedList<>();
     final JavaFxBus javaFxBus = JavaFxBus.getInstance();
 
-    public void process() {
+
+    public boolean isQuickCalculate = true;
+    private boolean mayGoNextStep;
+
+    public void runCalculateByStep() {
+        isQuickCalculate = false;
+        new Thread(() -> {
+            try {
+                process();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+    }
+
+    public void runQuickCalculate() {
+        isQuickCalculate = true;
+        new Thread(() -> {
+            try {
+                process();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    public void goNextStep() {
+        mayGoNextStep = true;
+    }
+
+    private void process() throws InterruptedException {
         final List<PsLabel> currentLabelList = SelectedLabelStorage.getInstance().getList();
         final List<Rule> newSuitableRule = new LinkedList<>();
         List<Rule> ruleList =
@@ -31,6 +59,14 @@ public class CalculateSystemService {
         boolean isExistProcessedRule;
         int counter = 0;
         while (counter++ < MAX_STEP_COUNT) {
+            if (!isQuickCalculate) {
+                while (!mayGoNextStep) {
+                    Thread.sleep(100);
+                }
+                mayGoNextStep = false;
+            }
+
+            javaFxBus.post(LogEvent.create("шаг " + counter));
             isExistProcessedRule = false;
             for (final Rule rule : ruleList) {
                 final boolean ruleSuitable = isRuleSuitable(currentLabelList, rule);
@@ -52,6 +88,8 @@ public class CalculateSystemService {
         }
     }
 
+
+
     private List<Rule> commitNewKnowledge(List<PsLabel> currentLabelList, List<Rule> ruleList, List<Rule> newSuitableRule, List<PsLabel> newLabels) {
         currentLabelList.addAll(newLabels);
         newLabels.clear();
@@ -70,6 +108,7 @@ public class CalculateSystemService {
 
     private void processResult() {
         if (results.size()==0) {
+            javaFxBus.post(LogEvent.create("нет подходящего результата"));
             return;
         }
 
@@ -78,16 +117,46 @@ public class CalculateSystemService {
             return;
         }
 
-        final PsResult mostPriorityResult = results.stream()
+        javaFxBus.post(LogEvent.create("поиск наиприоритетнейшего результата:"));
+        javaFxBus.post(LogEvent.create("фильтрация по заданному приоритету"));
+
+        final List<PsResult> firstFilterResult = results.stream()
                 .collect(Collectors.groupingBy(PsResult::getPriority))
-                .entrySet().stream().max((o1, o2) -> o1.getKey() - o2.getKey()).get().getValue()
+                .entrySet().stream().max((o1, o2) -> o1.getKey() - o2.getKey()).get().getValue();
 
-                .stream()
+
+        firstFilterResult.stream().forEach(result ->
+                        javaFxBus.post(
+                                LogEvent.create("\t" + result.toString()))
+        );
+
+        if (firstFilterResult.size()==1) {
+            javaFxBus.post(SelectFinalResultEvent.create(results.get(0)));
+            return;
+        }
+
+        javaFxBus.post(LogEvent.create("фильтрация по количеству входящих данных"));
+        final List<PsResult> secondFilterResult = firstFilterResult.stream()
                 .collect(Collectors.groupingBy(PsResult::getSubPriority))
-                .entrySet().stream().max((o1, o2) -> o1.getKey() - o2.getKey()).get().getValue()
+                .entrySet().stream().max((o1, o2) -> o1.getKey() - o2.getKey()).get().getValue();
 
-                .stream()
+        secondFilterResult.stream().forEach(result ->
+                        javaFxBus.post(
+                                LogEvent.create("\t" + result.toString()))
+        );
+
+        if (secondFilterResult.size()==1) {
+            javaFxBus.post(SelectFinalResultEvent.create(results.get(0)));
+            return;
+        }
+
+        javaFxBus.post(LogEvent.create("фильтрация новизне"));
+
+        final PsResult mostPriorityResult = secondFilterResult.stream()
                 .collect(Collectors.maxBy((o11, o21) -> o11.getId() - o21.getId())).get();
+
+        javaFxBus.post(
+                LogEvent.create("\t" + mostPriorityResult.toString()));
 
         javaFxBus.post(SelectFinalResultEvent.create(mostPriorityResult));
 
@@ -95,6 +164,7 @@ public class CalculateSystemService {
 
     private List<PsLabel> handleSuitableRule(Rule rule) {
         List<PsLabel> newLabels = Collections.emptyList();
+        javaFxBus.post(FindSuitableRuleEvent.create(rule));
 
         if (rule instanceof ClarifyingRule) {
             final List<PsLabel> outLabels = ((ClarifyingRule) rule).getOut();
@@ -105,7 +175,7 @@ public class CalculateSystemService {
             results.add(result);
             javaFxBus.post(AddingNewResultEvents.create(result));
         }
-        javaFxBus.post(FindSuitableRuleEvent.create(rule));
+
         return newLabels;
     }
 

@@ -39,6 +39,19 @@ public class PsResult {
         return id;
     }
 
+
+
+    public String getFullPriority() {
+        return String.valueOf(priority)
+                + "."  + String.valueOf(subPriority)
+                + "."  + String.valueOf(id);
+    }
+
+    @Override
+    public String toString() {
+        return getMessage() + " " + getFullPriority();
+    }
+
     public static PsResult create(String message, int subPriority) {
         return new PsResult(message, subPriority);
     }
