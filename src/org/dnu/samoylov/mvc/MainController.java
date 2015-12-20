@@ -50,19 +50,26 @@ public class MainController implements Initializable {
     }
 
 
-    public void reset(ActionEvent actionEvent) {
+    public void reset(ActionEvent actionEvent) throws IOException {
         SelectedLabelStorage.getInstance().getList().clear();
         selectedLabelsList.getItems().clear();
         resultList.getItems().clear();
         rulesList.getItems()
                 .forEach(text1 -> text1.setFill(Color.BLACK));
+
+        allLabelList.setContent(null);
+        presenter.fillAllLabelsList(allLabelList, selectedLabelsList);
+        allLabelList.setVisible(true);
+
     }
 
     public void step(ActionEvent actionEvent) {
-
+        allLabelList.setVisible(false);
     }
 
     public void result(ActionEvent actionEvent) {
+        allLabelList.setVisible(false);
+
         calculateSystemService = new CalculateSystemService();
         calculateSystemService.process();
     }
