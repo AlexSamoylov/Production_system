@@ -1,0 +1,7 @@
+label.txt:
+    label <name>
+    enum <theme>:<state>[, <state>]
+
+rule.txt
+    ЕСЛИ [<input_label_name>[, <input_label_name>]] ТО <output_label_name>[, <output_label_name>]
+    ЕСЛИ [<input_label_name>[, <input_label_name>]] ТО return <result_message> [priority <number> default:0]

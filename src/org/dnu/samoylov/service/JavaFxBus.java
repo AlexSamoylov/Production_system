@@ -3,6 +3,7 @@ package org.dnu.samoylov.service;
 import org.dnu.samoylov.event.AddingNewLabelsEvent;
 import org.dnu.samoylov.event.AddingNewResultEvents;
 import org.dnu.samoylov.event.FindSuitableRuleEvent;
+import org.dnu.samoylov.event.SelectFinalResultEvent;
 import org.dnu.samoylov.mvc.MainController;
 
 public class JavaFxBus {
@@ -34,5 +35,9 @@ public class JavaFxBus {
 
     public void post(AddingNewResultEvents addingNewResultEvents) {
         mainController.addNewResult(addingNewResultEvents.result);
+    }
+
+    public void post(SelectFinalResultEvent selectFinalResultEvent) {
+        mainController.selectFinalResult(selectFinalResultEvent.result);
     }
 }

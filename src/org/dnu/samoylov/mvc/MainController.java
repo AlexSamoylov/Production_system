@@ -92,4 +92,8 @@ public class MainController implements Initializable {
         Text text = new Text(result.getMessage());
         resultList.getItems().add(text);
     }
+
+    public void selectFinalResult(PsResult result) {
+        resultList.getItems().filtered(text -> text.getText().equals(result.getMessage())).forEach(text1 -> text1.setFill(Color.BLUE));
+    }
 }

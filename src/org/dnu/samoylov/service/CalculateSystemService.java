@@ -3,6 +3,7 @@ package org.dnu.samoylov.service;
 import org.dnu.samoylov.event.AddingNewLabelsEvent;
 import org.dnu.samoylov.event.AddingNewResultEvents;
 import org.dnu.samoylov.event.FindSuitableRuleEvent;
+import org.dnu.samoylov.event.SelectFinalResultEvent;
 import org.dnu.samoylov.model.PsLabel;
 import org.dnu.samoylov.model.rule.ClarifyingRule;
 import org.dnu.samoylov.model.rule.PsResult;
@@ -27,7 +28,7 @@ public class CalculateSystemService {
                 new ArrayList<>(RuleStorage.getInstance().getList());
         final List<PsLabel> newLabels = new LinkedList<>();
 
-        boolean isExistProcessedRule = false;
+        boolean isExistProcessedRule;
         int counter = 0;
         while (counter++ < MAX_STEP_COUNT) {
             isExistProcessedRule = false;
@@ -42,14 +43,7 @@ public class CalculateSystemService {
             }
 
             if (isExistProcessedRule) {
-                currentLabelList.addAll(newLabels);
-                newLabels.clear();
-                List<Rule> filteredRule = ruleList.stream()
-                        .filter(rule -> !newSuitableRule.contains(rule))
-                        .collect(Collectors.toList());
-                ruleList.clear();
-                newSuitableRule.clear();
-                ruleList = filteredRule;
+                ruleList = commitNewKnowledge(currentLabelList, ruleList, newSuitableRule, newLabels);
             } else {
                 processResult();
                 finishCalculateMethod();
@@ -58,11 +52,44 @@ public class CalculateSystemService {
         }
     }
 
+    private List<Rule> commitNewKnowledge(List<PsLabel> currentLabelList, List<Rule> ruleList, List<Rule> newSuitableRule, List<PsLabel> newLabels) {
+        currentLabelList.addAll(newLabels);
+        newLabels.clear();
+        List<Rule> filteredRule = ruleList.stream()
+                .filter(rule -> !newSuitableRule.contains(rule))
+                .collect(Collectors.toList());
+        ruleList.clear();
+        newSuitableRule.clear();
+        ruleList = filteredRule;
+        return ruleList;
+    }
+
     private void finishCalculateMethod() {
 
     }
 
     private void processResult() {
+        if (results.size()==0) {
+            return;
+        }
+
+        if (results.size()==1) {
+            javaFxBus.post(SelectFinalResultEvent.create(results.get(0)));
+            return;
+        }
+
+        final PsResult mostPriorityResult = results.stream()
+                .collect(Collectors.groupingBy(PsResult::getPriority))
+                .entrySet().stream().max((o1, o2) -> o1.getKey() - o2.getKey()).get().getValue()
+
+                .stream()
+                .collect(Collectors.groupingBy(PsResult::getSubPriority))
+                .entrySet().stream().max((o1, o2) -> o1.getKey() - o2.getKey()).get().getValue()
+
+                .stream()
+                .collect(Collectors.maxBy((o11, o21) -> o11.getId() - o21.getId())).get();
+
+        javaFxBus.post(SelectFinalResultEvent.create(mostPriorityResult));
 
     }
 
